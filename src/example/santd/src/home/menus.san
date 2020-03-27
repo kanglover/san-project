@@ -1,0 +1,67 @@
+<template>
+    <div>
+        <s-menu
+                mode="inline"
+                on-openChange="handleOpenChange"
+                on-click="handleClick"
+                inlineCollapsed="{{collapsed}}"
+        >
+            <s-sub-menu key="sub1">
+                <span slot="title">
+                    <s-icon type="appstore"/>
+                    <span>信息管理</span>
+                </span>
+                <s-menu-item key="/student" title="信息管理/学生信息">学生信息</s-menu-item>
+                <s-menu-item key="/teacher" title="信息管理/教师信息">教师信息</s-menu-item>
+            </s-sub-menu>
+            <s-sub-menu key="sub2">
+            <span slot="title">
+                <s-icon type="setting"/>
+                <span>文件管理</span>
+            </span>
+                <s-menu-item key="3">Option 1</s-menu-item>
+                <s-menu-item key="4">Option 2</s-menu-item>
+                <s-menu-item key="5">Option 3</s-menu-item>
+                <s-menu-item key="6">Option 4</s-menu-item>
+            </s-sub-menu>
+        </s-menu>
+    </div>
+</template>
+<script>
+    import {Menu, Icon} from 'santd';
+    import {router} from 'san-router';
+    import {connect} from 'san-store'
+    import {Types} from './action'
+    export default connect.san(
+        {},
+        {setPath: Types.SET_PATH}
+        )({
+        components: {
+            's-menu': Menu,
+            's-sub-menu': Menu.Sub,
+            's-menu-item': Menu.Item,
+            's-menu-item-group': Menu.MenuItemGroup,
+            's-icon': Icon
+        },
+        initData() {
+            return {
+                rootSubmenuKeys: ['sub1', 'sub2']
+            };
+        },
+        handleOpenChange({openKeys, prevOpenKeys}) {
+            const latestOpenKey = openKeys.find(key => prevOpenKeys.indexOf(key) === -1);
+            if (this.data.get('rootSubmenuKeys').indexOf(latestOpenKey) === -1) {
+                this.data.set('openKeys', openKeys);
+            }
+            else {
+                this.data.set('openKeys', latestOpenKey ? [latestOpenKey] : []);
+            }
+        },
+        handleClick(e) {
+            let paths = e.item.binds[1].raw.split("/");
+            this.actions.setPath(paths);
+            this.dispatch('getPath', paths);
+            router.locator.redirect(e.key);
+        }
+    })
+</script>

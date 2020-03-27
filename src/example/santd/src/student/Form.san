@@ -1,0 +1,109 @@
+<template>
+    <div>
+        <s-form labelCol="{{labelCol}}" wrapperCol="{{wrapperCol}}" on-submit="handleSubmit">
+            <s-formitem label="name">
+                <s-input decorator="{{nameDecorator}}" value="{{student.name}}"></s-input>
+            </s-formitem>
+            <s-formitem label="age">
+                <s-input-number min="1" max="100" decorator="{{ageDecorator}}" value="{{student.age}}"></s-input-number>
+            </s-formitem>
+            <s-formitem label="address">
+                <s-textarea rows="2" decorator="{{addressDecorator}}" value="{{student.address}}"></s-textarea>
+            </s-formitem>
+            <s-formitem label="date">
+                <s-datepicker decorator="{{dateDecorator}}" value="{{student.date}}"></s-datepicker>
+            </s-formitem>
+            <s-formitem label="gender">
+                <s-group name="radiogroup" value="{{student.gender}}" defaultValue="男" decorator="{{genderDecorator}}">
+                    <s-radio value="男">男</s-radio>
+                    <s-radio value="女">女</s-radio>
+                </s-group>
+            </s-formitem>
+            <s-formitem wrapperCol="{{tailWrapperCol}}">
+                <s-button class="login-form-button" type="primary" htmlType="submit">确定修改</s-button>
+            </s-formitem>
+        </s-form>
+    </div>
+</template>
+<script>
+    import {Form, Input, Button, InputNumber, DatePicker, Radio, Row, Col} from 'santd';
+    import {connect} from 'san-store'
+
+    let studentForm = Form.create({name: 'form'})({
+        components: {
+            's-form': Form,
+            's-formitem': Form.FormItem,
+            's-input': Input,
+            's-input-number': InputNumber,
+            's-textarea': Input.TextArea,
+            's-datepicker': DatePicker,
+            's-button': Button,
+            's-radio': Radio,
+            's-group': Radio.Group,
+            's-row': Row,
+            's-col': Col
+        },
+        initData() {
+            return {
+                nameDecorator: {
+                    name: 'name',
+                    rules: [{required: true, message: 'Please input your name!', whitespace: true}]
+                },
+                ageDecorator: {
+                    name: 'age',
+                    rules: [{required: true, message: 'Please input your age!'}]
+                },
+                addressDecorator: {
+                    name: 'address',
+                    rules: [{required: true, message: 'Please input your address!'}]
+                },
+                dateDecorator: {
+                    name: 'date',
+                    rules: [{type: 'object', required: true, message: 'Please select time!'}]
+                },
+                genderDecorator: {
+                    name: 'gender',
+                    rules: [{required: true, message: 'Please input your gender!'}]
+                },
+                labelCol: {
+                    xs: {span: 24},
+                    sm: {span: 4}
+                },
+                wrapperCol: {
+                    xs: {span: 24},
+                    sm: {span: 20}
+                },
+                tailWrapperCol: {
+                    xs: {span: 24, offset: 0},
+                    sm: {span: 16, offset: 8}
+                }
+            }
+        },
+        attached() {
+            let id = this.data.get('route.query.id');
+            this.actions.findStudent(id);
+        },
+        handleSubmit(e) {
+            e.preventDefault();
+            this.validateFieldsAndScroll((err, values) => {
+                if (!err) {
+                    console.log('Received values of form: ', values);
+                }
+            });
+        }
+    })
+
+    export default connect.san(
+        {student: 'student'},
+        {findStudent: 'findStudent'}
+    )(studentForm)
+</script>
+<style>
+    .login-form-forgot {
+        float: right;
+    }
+
+    .login-form-button {
+        width: 160px;
+    }
+</style>

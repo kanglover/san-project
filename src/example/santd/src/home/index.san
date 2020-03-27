@@ -1,0 +1,100 @@
+<template>
+    <div>
+        <s-layout>
+            <s-sider
+                    width="{{200}}"
+                    style="background: #fff"
+                    collapsed="{{collapsed}}"
+                    collapsible="{{true}}"
+                    trigger="{{noTrigger}}"
+            >
+                <div class="trigger-logo"/>
+                <s-menus collapsed="{{collapsed}}"></s-menus>
+            </s-sider>
+            <s-layout style="background: #fff">
+                <s-header style="background: #fff; padding: 0">
+                    <s-icon class="trigger" type="{{collapsed ? 'menu-unfold' : 'menu-fold'}}"
+                            on-click="toggleCollapsed"/>
+                </s-header>
+                <s-breadcrumb style="margin: 16px 20px">
+                    <s-brcrumbitem href="#" s-for="item in path">{{item}}</s-brcrumbitem>
+<!--                    <s-brcrumbitem href="#">List</s-brcrumbitem>-->
+<!--                    <s-brcrumbitem>App</s-brcrumbitem>-->
+
+                </s-breadcrumb>
+                <s-content style="{{{padding: '24px', background: '#fff', minHeight: '280px'}}}">
+                    <div id="main"></div>
+                </s-content>
+            </s-layout>
+        </s-layout>
+    </div>
+</template>
+<script>
+    import {Layout, Icon, Breadcrumb} from 'santd';
+    import Menus from './menus';
+    import {connect} from 'san-store';
+    export default connect.san(
+        {path: 'path'},
+        {}
+    )({
+        components: {
+            's-layout': Layout,
+            's-header': Layout.Header,
+            's-content': Layout.Content,
+            's-sider': Layout.Sider,
+            's-menus': Menus,
+            's-icon': Icon,
+            's-breadcrumb': Breadcrumb,
+            's-brcrumbitem': Breadcrumb.Item
+        },
+        initData() {
+            return {
+                noTrigger: null,
+                collapsed: false
+            }
+        },
+        toggleCollapsed() {
+            this.data.set('collapsed', !this.data.get('collapsed'));
+        },
+        attached() {
+
+        },
+        messages: {
+            'getPath': function (arg) {
+                // store 中的 path
+                let path = this.data.get('path');
+                // 取不到 store 中的就取子传父的信息
+                if (!path) {
+                    this.data.set('path', arg.value);
+                }
+            }
+        }
+    })
+</script>
+<style>
+    #components-layout-demo-top-side-2 .logo {
+        width: 120px;
+        height: 31px;
+        background: rgba(255, 255, 255, .2);
+        margin: 16px 28px 16px 0;
+        float: left;
+    }
+
+    .trigger {
+        font-size: 18px;
+        line-height: 64px;
+        padding: 0 24px;
+        cursor: pointer;
+        transition: color .3s;
+    }
+
+    .trigger:hover {
+        color: #1890ff;
+    }
+
+    .trigger-logo {
+        height: 32px;
+        background: rgba(0, 0, 0, 0.2);
+        margin: 16px;
+    }
+</style>

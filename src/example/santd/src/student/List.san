@@ -1,0 +1,101 @@
+<template>
+    <div>
+        <s-card style="width: 100%" title="学生列表">
+            <s-table
+                    rowSelection="{{rowSelection}}"
+                    data="{{students}}"
+                    columns="{{columns}}"
+                    pagination="{{pagination}}"
+                    on-change="handleTableChange"
+                    loading="{{loading}}"
+            >
+                <a slot="name" href="javascript:;">{{text}}</a>
+                <span slot="gender">
+                <s-tag
+                        color="{{text ==='男' ? 'volcano' :  'green'}}">
+                    {{text}}
+                </s-tag>
+            </span>
+                <span slot="action">
+                <a href="javascript:;" on-click="edit(record.key)">Edit</a>
+                <s-divider type="vertical"/>
+                <a href="javascript:;">Delete</a>
+            </span>
+            </s-table>
+        </s-card>
+    </div>
+</template>
+<script>
+    import {Card, Table, Tag, Divider, Icon} from 'santd';
+    import {router} from 'san-router';
+    import {connect} from 'san-store'
+
+    export default connect.san(
+        {students: 'students'},
+        {fetchStudents: 'fetchStudents'}
+    )({
+        components: {
+            's-card': Card,
+            's-table': Table,
+            's-thead': Table.Thead,
+            's-tbody': Table.Tbody,
+            's-th': Table.Th,
+            's-tr': Table.Tr,
+            's-td': Table.Td,
+            's-divider': Divider,
+            's-tag': Tag,
+            's-icon': Icon
+        },
+        initData() {
+            return {
+                columns: [{
+                    title: 'Name',
+                    dataIndex: 'name',
+                    scopedSlots: {render: name},
+                    sorter: true
+                }, {
+                    title: 'Age',
+                    dataIndex: 'age'
+                }, {
+                    title: 'Address',
+                    dataIndex: 'address'
+                }, {
+                    title: 'Gender',
+                    dataIndex: 'gender',
+                    scopedSlots: {render: 'gender'}
+                }, {
+                    title: 'Action',
+                    key: 'action',
+                    scopedSlots: {render: 'action'}
+                }]
+            }
+        },
+        attached() {
+            this.fetch({
+                current: 1,
+                pageSize: 10
+            });
+        },
+        handleTableChange(payload) {
+            this.data.set('pagination', payload.pagination);
+            this.fetch({
+                current: payload.pagination.current,
+                pageSize: 10,
+                // sortField: payload.sorter.field,
+                // sortOrder: payload.sorter.order,
+                // ...payload.filters
+            });
+        },
+        fetch(params) {
+            this.data.set('loading', true);
+            this.actions.fetchStudents(params).then(res => {
+                this.data.set('loading', false);
+                this.data.set('pagination.total', res);
+                // this.data.set('pagination.total', 200, {force: true});
+            });
+        },
+        edit(id) {
+            router.locator.redirect(`/student/form/${id}`);
+        }
+    })
+</script>
