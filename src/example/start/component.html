@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>组件</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+</head>
+<body>
+<script src="../../../node_modules/san/dist/san.js"></script>
+<script>
+    var MyComponent = san.defineComponent({
+        // template: require('text!./template.example'),
+        template: `
+            <div>
+                <a>{{name}}</a>
+                <a>{{createTime | dateFormat("yyyy-mm-dd")}}</a>
+            </div>
+        `,
+
+        initData: function () {
+            return {
+                online: ['errorrik', 'otakustay']
+            };
+        },
+        // 模板编译完成
+        compiled() {
+            console.log('compiled');
+        },
+        // 实例初始化完成
+        inited() {
+            console.log('inited');
+        },
+        // 组件元素创建完成
+        created() {
+            console.log('created');
+        },
+        // 组件附加到页面上
+        attached() {
+            console.log('attached');
+        },
+        // 组件从页面中移除
+        detached() {
+            console.log('detached');
+        },
+        // 卸载完成
+        disposed() {
+            console.log('disposed');
+        },
+        // 计算属性
+        computed: {
+            name: function () {
+                return this.data.get('firstName') + ' ' + this.data.get('lastName');
+            }
+        },
+        filters: {
+            dateFormat: function (value, format) {
+                return moment(value).format(format);
+            }
+        }
+    });
+
+    var SelectItem = san.defineComponent({
+        template: '<li on-click="select"><slot></slot></li>',
+
+        select: function () {
+            var value = this.data.get('value');
+
+            // 向组件树的上层派发消息（非 owner 的上层组件）
+            this.dispatch('UI:select-item-selected', value);
+        }
+    });
+
+    var Select = san.defineComponent({
+        template: '<ul><slot></slot></ul>',
+
+        // 声明组件要处理的消息
+        messages: {
+            'UI:select-item-selected': function (arg) {
+                var value = arg.value;
+                this.data.set('value', value);
+
+                // arg.target 可以拿到派发消息的组件
+            }
+        }
+    });
+
+    // dispatch 上层组件通信
+    san.defineComponent({
+        components: {
+            'ui-select': Select,
+            'ui-selectitem': SelectItem
+        },
+
+        template: ''
+            + '<div>'
+            + '  <ui-select value="{=value=}">'
+            + '    <ui-selectitem value="1">one</ui-selectitem>'
+            + '    <ui-selectitem value="2">two</ui-selectitem>'
+            + '    <ui-selectitem value="3">three</ui-selectitem>'
+            + '  </ui-select>'
+            + '</div>'
+    });
+
+    // 动态子组件的数据与事件绑定，指定owner和source
+    // 3.7.0+
+    var Person = san.defineComponent({
+        template: '<div>'
+            + '  <input type="text" value="{=name=}">'
+            + '  <input type="text" value="{=email=}">'
+            + '  <button on-click="done">Done</button>'
+            + '</div>',
+
+        done: function () {
+            this.fire('done', {
+                name: this.data.get('name'),
+                email: this.data.get('email')
+            });
+        }
+    });
+
+    var MyApp = san.defineComponent({
+        template: '<div>'
+            + '  name: {{author.name}}; email{{author.email}}'
+            + '  <button on-click="edit">edit</button>'
+            + '</div>',
+
+        edit: function () {
+            if (!this.editor) {
+                this.editor = new Person({
+                    owner: this,
+                    source: '<x-person name="{{author.name}}" email="{{author.email}}" on-done="editDone($event)"/>'
+                });
+                this.editor.attach(document.body)
+            }
+        },
+
+        editDone: function (e) {
+            this.data.set('author', e);
+        }
+    });
+
+    var myApp = new MyApp({
+        data: {
+            author: {
+                name: 'erik',
+                email: 'errorrik@gmail.com'
+            }
+        }
+    });
+    myApp.attach(document.body);
+
+    var myComponent = new MyComponent();
+    myComponent.attach(document.body);
+</script>
+</body>
+</html>

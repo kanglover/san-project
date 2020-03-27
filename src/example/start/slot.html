@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>插槽</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+</head>
+<body>
+<script src="../../../node_modules/san/dist/san.js"></script>
+<script>
+    var Panel = san.defineComponent({
+        template: ''
+            + '<div>'
+            + '    <div class="head" on-click="toggle">title</div>'
+            + '    <p style="{{fold}}"><slot></slot></p>'
+            + '</div>',
+
+        toggle: function () {
+            this.data.set('fold', !this.data.get('fold'));
+        }
+    });
+
+    var MyComponent = san.defineComponent({
+        components: {
+            'ui-panel': Panel
+        },
+
+        template: '<div><ui-panel>Hello San</ui-panel></div>'
+    });
+
+    // slot 通过 name 指定插入点
+    var Tab = san.defineComponent({
+        template: '<div>'
+            + '  <header><slot name="title"></slot></header>'
+            + '  <main><slot></slot></main>'
+            + '</div>'
+    });
+
+    var MyComponent = san.defineComponent({
+        components: {
+            'ui-tab': Tab
+        },
+
+        template: '<div><ui-tab>'
+            + '<h3 slot="title">1</h3><p>one</p>'
+            + '<h3 slot="title">2</h3><p>two<a slot="title">slot fail</a></p>'
+            + '</ui-tab></div>'
+    });
+/* MyComponent 渲染结果，a 元素无法被插入 title slot
+<div>
+  <header><h3>1</h3><h3>2</h3></header>
+  <main><p>one</p><p>two<a>slot fail</a></p></main>
+</div>
+*/
+
+    var Panel = san.defineComponent({
+        template: '<div><slot name="title"/><slot s-if="!hidden"/></div>',
+    });
+
+    var MyComponent = san.defineComponent({
+        components: {
+            'x-panel': Panel
+        },
+
+        template: ''
+            + '<div>'
+            + '<x-panel hidden="{{folderHidden}}" s-ref="panel">'
+            + '<b slot="title">{{name}}</b>'
+            + '<p>{{desc}}</p>'
+            + '</x-panel>'
+            + '</div>',
+
+        attached: function () {
+            // 0
+            this.ref('panel').slot().length
+        }
+    });
+
+
+    var myComponent = new MyComponent({
+        data: {
+            folderHidden: true,
+            desc: 'MVVM component framework',
+            name: 'San'
+        }
+    });
+    myComponent.attach(document.body);
+    /* MyComponent 渲染结果，hidden为true所以不包含default slot
+    <div>
+        <b>San</b>
+    </div>
+    */
+</script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>插槽</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+</head>
+<body>
+<script src="../../../node_modules/san/dist/san.js"></script>
+<script>
+
+    var Panel = san.defineComponent({
+        template: '<div><slot name="title"/></div>',
+    });
+
+    var MyComponent = san.defineComponent({
+        components: {
+            'x-panel': Panel
+        },
+
+        template: ''
+            + '<x-panel>'
+            + '<b slot="title">{{name}}</b>'
+            + '<p>{{desc}}</p>'
+            + '</x-panel>'
+            + '</div>',
+    });
+
+    let myComponent = new MyComponent({
+        data: {
+            desc: 'MVVM component framework',
+            name: 'San'
+        }
+    });
+    myComponent.attach(document.body);
+
+</script>
+</body>
+</html>

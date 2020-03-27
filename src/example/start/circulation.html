@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>循环语句</title>
+</head>
+<body>
+<script src="../../../node_modules/san/dist/san.js"></script>
+<script>
+    var MyApp = san.defineComponent({
+        template: ''
+            + '<dl>'
+            +     '<dt>name - email</dt>'
+            +     '<dd s-for="p, index in persons trackBy p.name" title="{{p.name}}">{{index + 1}}.{{p.name}}({{dept}}) - {{p.email}}</dd>'
+            + '</dl>',
+
+        initData() {
+            return {
+                dept: 'ssg',
+                persons: [
+                    {name: 'errorrik', email: 'errorrik@gmail.com'},
+                    {name: 'otakustay', email: 'otakustay@gmail.com'}
+                ],
+                myObject: {
+                    'nickname': 'kaka',
+                    '国籍': '巴西',
+                    'age': 27
+                },
+            };
+        },
+        computed: {
+            list() {
+                // 遍历对象
+                let myObject = this.data.get('myObject');
+                return Object.keys(myObject).map(item => {
+                    return {
+                        key: item,
+                        value: myObject[item]
+                    }
+                });
+            }
+        }
+    });
+
+    var myApp = new MyApp();
+    myApp.attach(document.body);
+</script>
+</body>
+</html>

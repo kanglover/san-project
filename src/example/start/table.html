@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>表单</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+</head>
+<body>
+<script src="../../../node_modules/san/dist/san.js"></script>
+<script>
+    var select = ''
+        + '<select value="{= online =}">'
+        + '    <option value="errorrik">errorrik</option>'
+        + '    <option value="otakustay">otakustay</option>'
+        + '    <option value="firede">firede</option>'
+        + '</select>';
+
+
+    var CheckBox = san.defineComponent({
+        template: ''
+            + '<div>'
+            + '    <label><input type="checkbox" value="errorrik" checked="{= online =}">errorrik</label>'
+            + '    <label><input type="checkbox" value="otakustay" checked="{= online =}">otakustay</label>'
+            + '    <label><input type="checkbox" value="firede" checked="{= online =}">firede</label>'
+            + '</div>',
+
+        initData() {
+            return {
+                online: []
+            };
+        },
+
+        attached() {
+            this.data.set('online', ['errorrik', 'otakustay'])
+        }
+    });
+
+    var checkbox = new CheckBox();
+    checkbox.attach(document.body);
+</script>
+</body>
+</html>

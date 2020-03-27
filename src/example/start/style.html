@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+</head>
+<body>
+<script src="../../../node_modules/san/dist/san.js"></script>
+<script>
+    var template = ''
+        + '<ul>'
+        +     '<li s-for="item, index in dataSource"'
+        +          'style="background:{{item.color}}"'
+        +          'class="{{item.id == value ? \'selected\' : \'\'}}"'
+        +          'on-click="itemClick(index)"'
+        +      '>{{item.title}}</li>'
+        + '</ul>';
+
+
+    var MyApp = san.defineComponent({
+        template: ''
+            + '<div>'
+            +     '<button on-click="toggle">toggle</button>'
+            +     '<ul class="list{{isHidden ?  \' list-hidden\' : \'\'}}">...</ul>'
+            + '</div>',
+        toggle: function () {
+            var isHidden = this.data.get('isHidden');
+            this.data.set('isHidden', !isHidden);
+        }
+    });
+
+    var myApp = new MyApp();
+    myApp.attach(document.body);
+</script>
+</body>
+</html>

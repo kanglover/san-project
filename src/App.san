@@ -1,0 +1,39 @@
+<template>
+    <div className="app-container">
+        <div className="app-drawer">
+            <div className="drawer-title">
+                <h3>XXX管理系统</h3>
+            </div>
+            <div className="menu">
+                <ul>
+                    <li>
+                        <router-link to="/">Home</router-link>
+                    </li>
+                    <li>
+                        <router-link to="/list">List</router-link>
+                    </li>
+                    <li>
+                        <router-link to="/about">about</router-link>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div className="app-bar">
+            <div className="user-info">
+                <span>userName</span>
+            </div>
+        </div>
+        <div className="app-content">
+            <!-- 逻辑组件渲染处 -->
+            <div id="main"></div>
+        </div>
+    </div>
+</template>
+<script>
+import {Link} from 'san-router';
+export default {
+    components: {
+        'router-link': Link
+    }
+}
+</script>

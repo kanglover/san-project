@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>owner和source</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+</head>
+<body>
+<script src="../../../node_modules/san/dist/san.js"></script>
+<script>
+    // 动态子组件的数据与事件绑定，指定owner和source
+    // 3.7.0+
+    var Person = san.defineComponent({
+        template: '<div>'
+            + '  <input type="text" value="{=name=}">'
+            + '  <input type="text" value="{=email=}">'
+            + '  <button on-click="done">Done</button>'
+            + '</div>',
+
+        done: function () {
+            this.fire('done', {
+                name: this.data.get('name'),
+                email: this.data.get('email')
+            });
+        }
+    });
+
+    var MyApp = san.defineComponent({
+        template: '<div>'
+            + '  name: {{author.name}}; email{{author.email}}'
+            + '  <button on-click="edit">edit</button>'
+            + '</div>',
+
+        edit: function () {
+            if (!this.editor) {
+                this.editor = new Person({
+                    owner: this,
+                    source: '<x-person name="{{author.name}}" email="{{author.email}}" on-done="editDone($event)"/>'
+                });
+                this.editor.attach(document.body)
+            }
+        },
+
+        editDone: function (e) {
+            this.data.set('author', e);
+        }
+    });
+
+    var myApp = new MyApp({
+        data: {
+            author: {
+                name: 'erik',
+                email: 'errorrik@gmail.com'
+            }
+        }
+    });
+    myApp.attach(document.body);
+</script>
+</body>
+</html>

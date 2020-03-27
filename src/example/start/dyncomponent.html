@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>动态子组件给父组件传值</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+</head>
+<body>
+<script src="../../../node_modules/san/dist/san.js"></script>
+<script>
+    const Child = san.defineComponent({
+        template: `
+        <div class="child">
+            {{name}}<button on-click="sendMsg">send msg</button>
+        </div>
+    `,
+        sendMsg() {
+            this.dispatch('child-msg', this.data.get('msg'));
+        }
+    });
+
+    const Parent = san.defineComponent({
+        template: `
+        <div class="parent" style="border: 1px solid red">
+            I am parent
+            <button on-click="addChild">
+                add child
+            </button>
+            {{childMsg}}
+        </div>`,
+
+        addChild() {
+
+            const childs = this.data.get('childs');
+            const parentEl = this.el;
+
+            childs.forEach(child => {
+
+                let childIns = new Child({
+                    parent: this,
+                    data: child
+                });
+
+                childIns.attach(parentEl);
+                // this.children.push(childIns);
+
+            });
+        },
+
+        messages: {
+            'child-msg': function(arg) {
+                this.data.set('childMsg', arg.value);
+            }
+        }
+    });
+
+    const parent = new Parent({
+        data: {
+            childs: [{
+                name: 'I am child1',
+                msg: 'child1 send msg'
+            }, {
+                name: 'I am child2',
+                msg: 'child2 send msg'
+            }]
+        }
+    });
+
+    parent.attach(document.body);
+</script>
+</body>
+</html>

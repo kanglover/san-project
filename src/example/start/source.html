@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>动态子组件source</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+</head>
+<body>
+<script src="../../../node_modules/san/dist/san.js"></script>
+<script>
+    var Dialog = san.defineComponent({
+        template: '<span><slot name="title"/><slot/></span>'
+    });
+
+    var MyApp = san.defineComponent({
+        template: '<div><button on-click="alterStrong">alter strong</button></div>',
+
+        attached: function () {
+            if (!this.dialog) {
+                this.dialog = new Dialog({
+                    owner: this,
+                    source: '<x-dialog>'
+                        + '<h2 slot="title">{{title}}</h2>'
+                        + '<b s-if="strongContent">{{content}}</b><u s-else>{{content}}</u>'
+                        + '</x-dialog>'
+                });
+                this.dialog.attach(this.el);
+            }
+        },
+
+        alterStrong: function () {
+            this.data.set('strongContent', !this.data.get('strongContent'));
+        }
+    });
+
+    var myApp = new MyApp({
+        data: {
+            title: 'MyDialog',
+            content: 'Hello San',
+            strongContent: true
+        }
+    });
+    myApp.attach(document.body);
+</script>
+</body>
+</html>

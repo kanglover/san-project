@@ -1,0 +1,68 @@
+import san, {DataTypes} from 'san';
+let MyComponent = san.defineComponent({
+    dataTypes: {
+        name: DataTypes.string
+    },
+    optionalArray: DataTypes.array,
+    optionalBool: DataTypes.bool,
+    optionalFunc: DataTypes.func,
+    optionalNumber: DataTypes.number,
+    optionalObject: DataTypes.object,
+    optionalString: DataTypes.string,
+    optionalSymbol: DataTypes.symbol,
+
+    // 指定类的实例
+    optionalMessage: DataTypes.instanceOf(Message),
+
+    // 枚举，确定是其中项
+    optionalEnum: DataTypes.oneOf(['News', 'Photos']),
+
+    // 指定类型之一
+    optionalUnion: DataTypes.oneOfType([
+        DataTypes.string,
+        DataTypes.number,
+        DataTypes.instanceOf(Message)
+    ]),
+
+    // 数组中的每个元素必须是指定类型
+    optionalArrayOf: DataTypes.arrayOf(DataTypes.number),
+
+    // 对象的所有属性必须是指定类型
+    optionalObjectOf: DataTypes.objectOf(DataTypes.number),
+
+    // 具有特定形状的对象
+    optionalObjectWidthShape: DataTypes.shape({
+        color: DataTypes.string,
+        fontSize: DataTypes.number
+    }),
+
+    // 数据必须被提供 校验器后面加 `isRequired`
+    requiredFunc: DataTypes.func.isRequired,
+
+    // 必须但可以是任何类型
+    requireAny: DataTypes.any.isRequired,
+
+    // 自定义的校验器。
+    // 如果校验失败，它应该丢出一个异常。
+    customProp: function (props, propName, componentName) {
+        if (!/matchme/.test(props[propName])) {
+            throw new Error(
+                'Invalid prop `' + propName + '` supplied to' +
+                ' `' + componentName + '`. Validation failed.'
+            );
+        }
+    },
+
+    // 给 `arrayOf` 和 `objectOf` 提供一个自定义校验器。
+    // 如果校验失败，那么应该当抛出一个异常。
+    // 对于数组或者对象中的每个元素都会调用校验器进行校验。
+    // 第一个参数是这个数组或者对象，第二个参数是元素的 key。
+    customArrayProp: DataTypes.arrayOf(function (dataValue, key, componentName, dataFullName) {
+        if (!/matchme/.test(dataValue[key])) {
+            throw new Error(
+                'Invalid prop `' + dataFullName + '` supplied to' +
+                ' `' + componentName + '`. Validation failed.'
+            );
+        }
+    })
+});

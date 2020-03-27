@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>模块</title>
+</head>
+<body>
+<script src="../../../node_modules/san/dist/san.js"></script>
+<script>
+    var MyApp = san.defineComponent({
+        template:  ''
+            + '<div>'
+            +   '<p>Hello {{name}}</p>'
+            +   '<u>{{sum(num1, num2)}}</u>'
+            + '</div>',
+
+        sum(a, b) {
+            return a + b;
+        },
+
+        initData() {
+            return {
+                name: 'San',
+                num1: 1,
+                num2: 2
+            }
+        }
+    });
+    var myApp = new MyApp();
+    myApp.attach(document.body);
+</script>
+</body>
+</html>

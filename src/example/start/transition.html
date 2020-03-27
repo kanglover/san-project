@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>过渡</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+</head>
+<body>
+<script src="../../../node_modules/san/dist/san.js"></script>
+<script>
+    var MyApp = san.defineComponent({
+        template: `
+            <div>
+                <button on-click="toggle">toggle</button>
+                <button s-if="isShow" s-transition="opacityTrans">Hello San!</button>
+                <button s-else s-transition="opacityTrans">Hello ER!</button>
+            </div>
+        `,
+
+        toggle: function () {
+            this.data.set('isShow', !this.data.get('isShow'));
+        },
+
+        opacityTrans: {
+            enter: function (el, done) {
+                var steps = 20;
+                var currentStep = 0;
+
+                function goStep() {
+                    if (currentStep >= steps) {
+                        el.style.opacity = 1;
+
+                        // 当透明度为 1 之后，完成动画，执行 done
+                        done();
+                        return;
+                    }
+
+                    el.style.opacity = 1 / steps * currentStep++;
+                    requestAnimationFrame(goStep);
+                }
+
+                goStep();
+            },
+
+            leave: function (el, done) {
+                var steps = 20;
+                var currentStep = 0;
+
+                function goStep() {
+                    if (currentStep >= steps) {
+                        el.style.opacity = 0;
+                        done();
+                        return;
+                    }
+
+                    el.style.opacity = 1 - 1 / steps * currentStep++;
+                    requestAnimationFrame(goStep);
+                }
+
+                goStep();
+            }
+        }
+    });
+
+    var MyComponent = san.defineComponent({
+        template: `
+        <div>
+            <button on-click="toggle">toggle</button>
+            <button on-click="toggleTrans">toggle transition</button>
+            <button s-if="isShow" s-transition="opacityTrans(noTransition)">Hello San!</button>
+            <button s-else s-transition="opacityTrans(noTransition)">Hello ER!</button>
+        </div>
+    `,
+
+        toggle: function () {
+            this.data.set('isShow', !this.data.get('isShow'));
+        },
+
+        toggleTrans: function () {
+            this.data.set('noTransition', !this.data.get('noTransition'));
+        },
+
+        initData: function () {
+            return {
+                noTransition: false
+            };
+        },
+
+        opacityTrans: function (disabled) {
+            return {
+                enter: function (el, done) {
+                    // false 直接完成渲染
+                    if (disabled) {
+                        done();
+                        return;
+                    }
+
+                    var steps = 20;
+                    var currentStep = 0;
+
+                    function goStep() {
+                        if (currentStep >= steps) {
+                            el.style.opacity = 1;
+                            done();
+                            return;
+                        }
+
+                        el.style.opacity = 1 / steps * currentStep++;
+                        requestAnimationFrame(goStep);
+                    }
+
+                    goStep();
+                },
+
+                leave: function (el, done) {
+                    if (disabled) {
+                        done();
+                        return;
+                    }
+
+                    var steps = 20;
+                    var currentStep = 0;
+
+                    function goStep() {
+                        if (currentStep >= steps) {
+                            el.style.opacity = 0;
+                            done();
+                            return;
+                        }
+
+                        el.style.opacity = 1 - 1 / steps * currentStep++;
+                        requestAnimationFrame(goStep);
+                    }
+
+                    goStep();
+                }
+            }
+        }
+    });
+
+    // var myApp = new MyApp();
+    // myApp.attach(document.body);
+
+    var myComponent = new MyComponent();
+    myComponent.attach(document.body);
+</script>
+</body>
+</html>

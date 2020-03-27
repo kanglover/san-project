@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <title>数据操作</title>
+</head>
+<body>
+<script src="../../../node_modules/san/dist/san.js"></script>
+<script>
+    var myApp = san.defineComponent({
+        initData() {
+            return {
+                width: 100,
+                top: 100,
+                left: -1000
+            }
+        },
+
+        attached() {
+            let width = this.data.get().width;
+            let {top, left} = this.data.get();
+
+            requestUser().then(this.userReceived.bind(this));
+        },
+
+        userReceived(data) {
+            this.data.set('user', data);
+        },
+
+        changeEmail(email) {
+            this.data.set('user.email', email);
+        },
+
+        updateUserInfo(data) {
+            // 合并数据
+            this.data.merge('user', data);
+        },
+
+        updateNumber(data) {
+            // 类似数组的 map 方法
+            this.data.apply('number', function (number) {
+                return {
+                    value: number.value * 2
+                }
+            });
+        },
+
+        operateDate(data) {
+            this.data.push('users', {name: name});
+            this.data.pop('users');
+            this.data.unshift('users', {name: name});
+            this.data.shift('users');
+            this.data.remove('users', data);
+            this.data.removeAt('users', index);
+            this.data.splice('users', [index, deleteCount]);
+        }
+    })
+</script>
+</body>
+</html>

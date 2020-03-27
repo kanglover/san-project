@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>事件处理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+</head>
+<body>
+<script src="../../../node_modules/san/dist/san.js"></script>
+<script>
+    san.defineComponent({
+        template: '<button type="button" on-click="clicker($event)">click here</button>',
+
+        clicker: function (e) {
+            alert(e.target.tagName); // BUTTON
+        }
+    });
+
+    // 派发事件
+    var Label = san.defineComponent({
+        template: '<template class="ui-label" title="{{text}}">{{text}}</template>',
+
+        attached: function () {
+            this.fire('done', this.data.get('text') + ' done');
+
+            // 使用 dispatch 也可以传递消息
+            // this.dispatch('person-done', this.data.get('text') + ' done');
+        }
+    });
+
+    // 自定义事件 on-done
+    var Labels = san.defineComponent({
+        components: {
+            'ui-label': Label
+        },
+
+        template: '<div><ui-label bind-text="name" on-done="labelDone($event)"></ui-label></div>',
+
+        labelDone: function (doneMsg) {
+            alert(doneMsg);
+        },
+
+        // messages: {
+        //     'person-done': function (e) {
+        //         alert(e.value);
+        //     }
+        // }
+    });
+
+
+    // 事件将绑定在捕获阶段
+    var MyComponent = san.defineComponent({
+        template: ''
+            + '<div on-click="capture:mainClick">'
+            + '<button on-click="capture:btnClick">click</button>'
+            + '</div>',
+
+        mainClick: function (title) {
+            alert('Main');
+        },
+
+        btnClick: function (title) {
+            alert('Button');
+        }
+    });
+
+    // 绑定在根元素的 DOM 事件
+    var Button = san.defineComponent({
+        template: '<a class="my-button"><slot/></a>'
+    });
+
+    var MyComponent = san.defineComponent({
+        components: {
+            'ui-button': Button
+        },
+
+        template: '<div><ui-button on-click="native:clicker(title)">{{title}}</ui-button></div>',
+
+        clicker: function (title) {
+            alert(title);
+        }
+    });
+
+    // var myComponent = new MyComponent();
+    // myComponent.attach(document.body);
+
+    var labels = new Labels();
+    labels.attach(document.body);
+</script>
+</body>
+</html>
